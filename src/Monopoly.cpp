@@ -39,7 +39,6 @@ Player* Monopoly::GetPlayer(int m)
 bool Monopoly::Buy(int playerIndex, Field* field)
 {
 	Player* foundedPlayer = GetPlayer(playerIndex);
-	//list<tuple<std::string, Type, int, bool>>::iterator fieldIterator;
 	switch (field->GetType())
 	{
 	case Field::Type::AUTO:
@@ -83,15 +82,13 @@ Field* Monopoly::GetFieldByName(const std::string& name)
 bool Monopoly::Renta(int playerIndex, Field* field)
 {
 	Player* foundedPlayer = GetPlayer(playerIndex);
-	Player* tempPlayer;
 
 	switch (field->GetType())
 	{
 	case Field::Type::AUTO:
 		if (!field->IsOwnerExist())
 			return false;
-		tempPlayer = field->GetOwner();
-		tempPlayer->AddMoney(250);
+		field->GetOwner()->AddMoney(250);
 		foundedPlayer->SubtractMoney(250);
 		break;
 	case Field::Type::FOOD:
@@ -100,15 +97,13 @@ bool Monopoly::Renta(int playerIndex, Field* field)
 	case Field::Type::TRAVEL:
 		if (!field->IsOwnerExist())
 			return false;
-		tempPlayer = field->GetOwner();
-		tempPlayer->AddMoney(250);
+		field->GetOwner()->AddMoney(250);
 		foundedPlayer->SubtractMoney(250);
 		break;
 	case Field::Type::CLOTHER:
 		if (!field->IsOwnerExist())
 			return false;
-		tempPlayer = field->GetOwner();
-		tempPlayer->AddMoney(250);
+		field->GetOwner()->AddMoney(250);
 		foundedPlayer->SubtractMoney(250);
 		break;
 	case Field::Type::PRISON:
