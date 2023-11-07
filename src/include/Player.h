@@ -11,6 +11,7 @@ public:
     int GetAmountOfMoney() const;
     void SubtractMoney(int value);
     void AddMoney(int value);
+
 private:
 	std::string name;
 	int amountOfMoney;

@@ -9,14 +9,14 @@ Monopoly::Monopoly(string names[10],int countPlaers)
 	{
 		players.push_back({names[i], 6000});
 	}
-	Fields.push_back(make_tuple("Ford", Monopoly::AUTO, 0, false));
-	Fields.push_back(make_tuple("MCDonald", Monopoly::FOOD, 0, false));
-	Fields.push_back(make_tuple("Lamoda", Monopoly::CLOTHER, 0, false));
-	Fields.push_back(make_tuple("Air Baltic", Monopoly::TRAVEL, 0, false));
-	Fields.push_back(make_tuple("Nordavia", Monopoly::TRAVEL, 0, false));
-	Fields.push_back(make_tuple("Prison", Monopoly::PRISON, 0, false));
-	Fields.push_back(make_tuple("MCDonald", Monopoly::FOOD, 0, false));
-	Fields.push_back(make_tuple("TESLA", Monopoly::AUTO, 0, false));
+	fields.push_back({"Ford", Field::Type::AUTO});
+	fields.push_back({"MCDonald", Field::Type::FOOD});
+	fields.push_back({"Lamoda", Field::Type::CLOTHER});
+	fields.push_back({"Air Baltic", Field::Type::TRAVEL});
+	fields.push_back({"Nordavia", Field::Type::TRAVEL});
+	fields.push_back({"Prison", Field::Type::PRISON});
+	fields.push_back({"MCDonald", Field::Type::FOOD});
+	fields.push_back({"TESLA", Field::Type::AUTO});
 }
 
 std::vector<Player>* Monopoly::GetPlayers()
@@ -24,9 +24,9 @@ std::vector<Player>* Monopoly::GetPlayers()
 	return &players;
 }
 
-std::list<std::tuple<std::string, Monopoly::Type,int,bool>> * Monopoly::GetFieldsList()
+std::vector<Field>* Monopoly::GetFields()
 {
-	return &Fields;
+	return &fields;
 }
 
 Player* Monopoly::GetPlayer(int m)
@@ -36,87 +36,85 @@ Player* Monopoly::GetPlayer(int m)
 	return &*i;
 }
 
-bool Monopoly::Buy(int playerIndex, std::tuple<std::string, Type, int, bool> field)
+bool Monopoly::Buy(int playerIndex, Field* field)
 {
 	Player* foundedPlayer = GetPlayer(playerIndex);
-	list<tuple<std::string, Type, int, bool>>::iterator fieldIterator;
-	switch (get<1>(field))
+	//list<tuple<std::string, Type, int, bool>>::iterator fieldIterator;
+	switch (field->GetType())
 	{
-	case AUTO:
-		if (get<2>(field)) // Check the owner
-			return false; // if the owner EXIST - return
+	case Field::Type::AUTO:
+		if (field->IsOwnerExist())
+			return false;
 		foundedPlayer->SubtractMoney(500);
-		field = make_tuple(get<0>(field), get<1>(field), playerIndex, get<2>(field)); // Copy field's info and set player index owner, flag 'already owned' as true
+		field->SetOwner(foundedPlayer);
 		break;
-	case FOOD:
-		if (get<2>(field))
+	case Field::Type::FOOD:
+		if (field->IsOwnerExist())
 			return false;
 		foundedPlayer->SubtractMoney(250);
-		field = make_tuple(get<0>(field), get<1>(field), playerIndex, get<2>(field));
+		field->SetOwner(foundedPlayer);
 		break;
-	case TRAVEL:
-		if (get<2>(field))
+	case Field::Type::TRAVEL:
+		if (field->IsOwnerExist())
 			return false;
 		foundedPlayer->SubtractMoney(700);
-		field = make_tuple(get<0>(field), get<1>(field), playerIndex, get<2>(field));
+		field->SetOwner(foundedPlayer);
 		break;
-	case CLOTHER:
-		if (get<2>(field))
+	case Field::Type::CLOTHER:
+		if (field->IsOwnerExist())
 			return false;
 		foundedPlayer->SubtractMoney(100);
-		field = make_tuple(get<0>(field), get<1>(field), playerIndex, get<2>(field));
+		field->SetOwner(foundedPlayer);
 		break;
 	default:
 		return false;
 	};
-	fieldIterator = find_if(Fields.begin(), Fields.end(), [field](auto foundedPlayer) { return get<0>(foundedPlayer) == get<0>(field); }); //find field in Monopoly list
-	*fieldIterator = field; //set as a new field with updated parameters
 	return true;
 }
 
-std::tuple<std::string, Monopoly::Type, int, bool>  Monopoly::GetFieldByName(std::string l)
+Field* Monopoly::GetFieldByName(const std::string& name)
 {
-	std::list<std::tuple<std::string, Monopoly::Type, int, bool>>::iterator i = find_if(Fields.begin(), Fields.end(),[l] (std::tuple<std::string, Monopoly::Type, int, bool> x) {
-		return get<0>(x) == l;
+	std::vector<Field>::iterator i = find_if(fields.begin(), fields.end(),[name] (Field x) {
+		return x.GetName() == name;
 	});
-	return *i;
+	return &*i;
 }
 
-bool Monopoly::Renta(int playerIndex, std::tuple<std::string, Type, int, bool> field)
+bool Monopoly::Renta(int playerIndex, Field* field)
 {
 	Player* foundedPlayer = GetPlayer(playerIndex);
 	Player* tempPlayer;
 
-	switch (get<1>(field)) // Check type of field
+	switch (field->GetType())
 	{
-	case AUTO:
-		if (!get<2>(field)) // Check the owner
-			return false;	// if the owner NOT EXIST - return
-		tempPlayer = GetPlayer(get<2>(field));
+	case Field::Type::AUTO:
+		if (!field->IsOwnerExist())
+			return false;
+		tempPlayer = field->GetOwner();
 		tempPlayer->AddMoney(250);
 		foundedPlayer->SubtractMoney(250);
 		break;
-	case FOOD:
-		if (!get<2>(field))
+	case Field::Type::FOOD:
+		if (!field->IsOwnerExist())
 			return false;
-	case TRAVEL:
-		if (!get<2>(field))
+	case Field::Type::TRAVEL:
+		if (!field->IsOwnerExist())
 			return false;
-		tempPlayer = GetPlayer(get<2>(field));
+		tempPlayer = field->GetOwner();
 		tempPlayer->AddMoney(250);
 		foundedPlayer->SubtractMoney(250);
 		break;
-	case CLOTHER:
-		if (!get<2>(field))
+	case Field::Type::CLOTHER:
+		if (!field->IsOwnerExist())
 			return false;
-		tempPlayer = GetPlayer(get<2>(field));
+		tempPlayer = field->GetOwner();
 		tempPlayer->AddMoney(250);
 		foundedPlayer->SubtractMoney(250);
 		break;
-	case PRISON:
+	case Field::Type::PRISON:
 		foundedPlayer->SubtractMoney(1000);
 		break;
-	case BANK:
+	case Field::Type::BANK:
 		foundedPlayer->SubtractMoney(750);
 		break;
 	default:

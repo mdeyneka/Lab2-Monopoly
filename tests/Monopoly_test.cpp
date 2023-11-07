@@ -18,20 +18,20 @@ TEST(LAB2, GetPlayersListReturnCorrectList) {
     ASSERT_TRUE(i);
 }
 TEST(LAB2, GetFieldsListReturnCorrectList) {
-    tuple<string, Monopoly::Type,int,bool> expectedCompanies[]{
-        make_tuple("Ford",Monopoly::AUTO ,0,false),
-        make_tuple("MCDonald",Monopoly::FOOD,0,false),
-        make_tuple("Lamoda",Monopoly::CLOTHER,0,false),
-        make_tuple("Air Baltic",Monopoly::TRAVEL,0,false),
-        make_tuple("Nordavia",Monopoly::TRAVEL,0,false),
-        make_tuple("Prison",Monopoly::PRISON,0,false),
-        make_tuple("MCDonald",Monopoly::FOOD,0,false),
-        make_tuple("TESLA",Monopoly::AUTO,0,false)
+    vector<Field> expectedCompanies {
+        {"Ford",Field::Type::AUTO},
+        {"MCDonald",Field::Type::FOOD},
+        {"Lamoda",Field::Type::CLOTHER},
+        {"Air Baltic",Field::Type::TRAVEL},
+        {"Nordavia",Field::Type::TRAVEL},
+        {"Prison",Field::Type::PRISON},
+        {"MCDonald",Field::Type::FOOD},
+        {"TESLA",Field::Type::AUTO}
     };
     string players[]{ "Peter","Ekaterina","Alexander" };
 
     Monopoly monopoly(players, 3);
-   auto actualCompanies = monopoly.GetFieldsList();
+   auto actualCompanies = monopoly.GetFields();
    int i = 0;
    for (auto x : *actualCompanies)
    {
@@ -51,7 +51,7 @@ TEST(LAB2, PlayerBuyNoOwnedCompanies)
     auto player = monopoly.GetPlayer(1);
     ASSERT_EQ(player->GetAmountOfMoney(), 5500);
     x = monopoly.GetFieldByName("Ford");
-    ASSERT_TRUE(get<2>(x) != 0);
+    ASSERT_TRUE(x->IsOwnerExist() == true);
 }
 
 TEST(LAB2, RentaShouldBeCorrectTransferMoney)
@@ -70,8 +70,7 @@ TEST(LAB2, RentaShouldBeCorrectTransferMoney)
     ASSERT_EQ(player2->GetAmountOfMoney(), 5750);    
 }
 
-
-bool operator== (std::tuple<std::string, Monopoly::Type, int, bool> & a , std::tuple<std::string, Monopoly::Type, int, bool> & b)
+bool operator== (const Field &a , const Field& b)
 {
-    return get<0>(a) == get<0>(b) && get<1>(a) == get<1>(b) && get<2>(a) == get<2>(b) && get<3>(a) == get<3>(b);
+    return a.GetName() == b.GetName() && a.GetType() == b.GetType() && a.GetOwner() == b.GetOwner();
 }
