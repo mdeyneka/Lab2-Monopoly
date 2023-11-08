@@ -18,26 +18,26 @@ TEST(LAB2, GetPlayersListReturnCorrectList) {
     ASSERT_TRUE(i);
 }
 TEST(LAB2, GetFieldsListReturnCorrectList) {
-    vector<Field> expectedCompanies {
-        {"Ford",Field::Type::AUTO},
-        {"MCDonald",Field::Type::FOOD},
-        {"Lamoda",Field::Type::CLOTHER},
-        {"Air Baltic",Field::Type::TRAVEL},
-        {"Nordavia",Field::Type::TRAVEL},
-        {"Prison",Field::Type::PRISON},
-        {"MCDonald",Field::Type::FOOD},
-        {"TESLA",Field::Type::AUTO}
+    vector<Field*> expectedCompanies {
+        new FieldAuto("Ford"),
+        new FieldFood("MCDonald"),
+        new FieldClothes("Lamoda"),
+        new FieldTravel("Air Baltic"),
+        new FieldTravel("Nordavia"),
+        new FieldPrison("Prison"),
+        new FieldFood("MCDonald"),
+        new FieldAuto("TESLA"),
     };
     string players[]{ "Peter","Ekaterina","Alexander" };
 
     Monopoly monopoly(players, 3);
-   auto actualCompanies = monopoly.GetFields();
-   int i = 0;
-   for (auto x : *actualCompanies)
-   {
-       ASSERT_EQ(x, expectedCompanies[i++]);
-   }
-   ASSERT_TRUE(i);   
+    vector<Field*> *actualCompanies = monopoly.GetFields();
+    int i = 0;
+    for (auto x : *actualCompanies)
+    {
+       ASSERT_EQ(*x, *expectedCompanies[i++]);
+    }
+    ASSERT_TRUE(i);   
 }
 
 TEST(LAB2, PlayerBuyNoOwnedCompanies)
@@ -45,24 +45,24 @@ TEST(LAB2, PlayerBuyNoOwnedCompanies)
     string players[]{ "Peter","Ekaterina","Alexander" };
 
     Monopoly monopoly(players, 3);
-    auto x = monopoly.GetFieldByName("Ford");
-    monopoly.Buy(1, x);
+    Field* field = monopoly.GetFieldByName("Ford");
+    monopoly.Buy(1, field);
 
     auto player = monopoly.GetPlayer(1);
     ASSERT_EQ(player->GetAmountOfMoney(), 5500);
-    x = monopoly.GetFieldByName("Ford");
-    ASSERT_TRUE(x->IsOwnerExist() == true);
+    field = monopoly.GetFieldByName("Ford");
+    ASSERT_TRUE(field->IsOwnerExist() == true);
 }
 
 TEST(LAB2, RentaShouldBeCorrectTransferMoney)
 {
     string players[]{ "Peter","Ekaterina","Alexander" };
     Monopoly monopoly(players, 3);
-    auto x = monopoly.GetFieldByName("Ford");
-    monopoly.Buy(1, x);
+    Field* field = monopoly.GetFieldByName("Ford");
+    monopoly.Buy(1, field);
 
-    x = monopoly.GetFieldByName("Ford");
-    monopoly.Renta(2, x);
+    field = monopoly.GetFieldByName("Ford");
+    monopoly.Renta(2, field);
     auto player1 = monopoly.GetPlayer(1);
     ASSERT_EQ(player1->GetAmountOfMoney(), 5750);
 
@@ -70,7 +70,7 @@ TEST(LAB2, RentaShouldBeCorrectTransferMoney)
     ASSERT_EQ(player2->GetAmountOfMoney(), 5750);    
 }
 
-bool operator== (const Field &a , const Field& b)
+bool operator== (const Field& a , const Field& b)
 {
-    return a.GetName() == b.GetName() && a.GetType() == b.GetType() && a.GetOwner() == b.GetOwner();
+    return a.GetName() == b.GetName() && a.GetOwner() == b.GetOwner();
 }
