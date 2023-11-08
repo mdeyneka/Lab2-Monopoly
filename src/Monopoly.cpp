@@ -3,11 +3,11 @@
 
 using namespace ::std;
 
-Monopoly::Monopoly(string names[10],int countPlaers)
+Monopoly::Monopoly(const vector<string>& names)
 {
-	for (int i = 0; i < countPlaers; i++)
+	for(auto it = names.cbegin(); it != names.cend(); ++it)
 	{
-		players.push_back({names[i], 6000});
+		players.emplace_back(new Player(*it, 6000));
 	}
 	fields.emplace_back(new FieldAuto("Ford"));
 	fields.emplace_back(new FieldFood("MCDonald"));
@@ -19,50 +19,47 @@ Monopoly::Monopoly(string names[10],int countPlaers)
 	fields.emplace_back(new FieldAuto("TESLA"));
 }
 
-std::vector<Player>* Monopoly::GetPlayers()
+std::vector<shared_ptr<Player>>* Monopoly::GetPlayers()
 {
 	return &players;
 }
 
-std::vector<Field*>* Monopoly::GetFields()
+std::vector<std::shared_ptr<Field>>* Monopoly::GetFields()
 {
 	return &fields;
 }
 
-Player* Monopoly::GetPlayer(int m)
+shared_ptr<Player> Monopoly::GetPlayer(int m)
 {
-	std::vector<Player>::iterator i = players.begin();
+	std::vector<shared_ptr<Player>>::iterator i = players.begin();
 	advance(i, m - 1);
-	return &*i;
+	return *i;
 }
 
-bool Monopoly::Buy(int playerIndex, Field* field)
+bool Monopoly::Buy(int playerIndex, std::shared_ptr<Field> field)
 {
-	Player* buyer = GetPlayer(playerIndex);
 	if (field->IsOwnerExist() || !field->IsPossibleToBuy())
 		return false;
+	shared_ptr<Player> buyer = GetPlayer(playerIndex);
 	buyer->SubtractMoney(field->GetPriceForBuying());
 	field->SetOwner(buyer);
 	return true;
 }
 
-Field* Monopoly::GetFieldByName(const std::string& name)
+std::shared_ptr<Field> Monopoly::GetFieldByName(const std::string& name)
 {
-	std::vector<Field*>::iterator i = find_if(fields.begin(), fields.end(),[name] (Field* x) {
+	std::vector<std::shared_ptr<Field>>::iterator it = find_if(fields.begin(), fields.end(),[name] (std::shared_ptr<Field> x) {
 		return x->GetName() == name;
 	});
-	return *i;
+	return *it;
 }
 
-bool Monopoly::Renta(int playerIndex, Field* field)
+bool Monopoly::Renta(int playerIndex, std::shared_ptr<Field> field)
 {
-	Player* tenant = GetPlayer(playerIndex);
 	if (!field->IsOwnerExist())
 			return false;
+	shared_ptr<Player> tenant = GetPlayer(playerIndex);
 	field->GetOwner()->AddMoney(field->GetAmountOfMoneyForRenta());
 	tenant->SubtractMoney(field->GetAmountOfMoneyForRenta());
 	return true;
 }
-
-
-

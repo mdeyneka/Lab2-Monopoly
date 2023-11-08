@@ -4,16 +4,30 @@
 
 using namespace ::std;
 
-TEST(LAB2, GetPlayersListReturnCorrectList) {
-    string players[]{ "Peter","Ekaterina","Alexander" };
-   
-    Monopoly monopoly(players,3);
+class MockPlayer : public Player
+{
+    MOCK_METHOD(const string&, GetName, (), (const, override));
+    MOCK_METHOD(int, GetAmountOfMoney, (), (const, override));
+    MOCK_METHOD(void, SubtractMoney, (int), (override));
+    MOCK_METHOD(void, AddMoney, (int), (override));
+};
 
-    std::vector<Player>* x = monopoly.GetPlayers();
+class MockFieldFood : public FieldFood
+{
+    MOCK_METHOD(bool, IsOwnerExist, (), (const, override));
+    MOCK_METHOD(int, GetAmountOfMoneyForRenta, (), (const. override));
+};
+
+TEST(LAB2, GetPlayersListReturnCorrectList) {
+    vector<string> players = { "Peter","Ekaterina","Alexander" };
+   
+    Monopoly monopoly(players);
+
+    std::vector<shared_ptr<Player>>* x = monopoly.GetPlayers();
     int i = 0;
     for (auto c : *x) {
-        ASSERT_STREQ(c.GetName().c_str(), players[i++].c_str());
-        ASSERT_EQ(c.GetAmountOfMoney(), 6000);
+        ASSERT_STREQ(c->GetName().c_str(), players[i++].c_str());
+        ASSERT_EQ(c->GetAmountOfMoney(), 6000);
     }
     ASSERT_TRUE(i);
 }
@@ -28,10 +42,10 @@ TEST(LAB2, GetFieldsListReturnCorrectList) {
         new FieldFood("MCDonald"),
         new FieldAuto("TESLA"),
     };
-    string players[]{ "Peter","Ekaterina","Alexander" };
+    vector<string> players = { "Peter","Ekaterina","Alexander" };
 
-    Monopoly monopoly(players, 3);
-    vector<Field*> *actualCompanies = monopoly.GetFields();
+    Monopoly monopoly(players);
+    vector<std::shared_ptr<Field>> *actualCompanies = monopoly.GetFields();
     int i = 0;
     for (auto x : *actualCompanies)
     {
@@ -42,10 +56,10 @@ TEST(LAB2, GetFieldsListReturnCorrectList) {
 
 TEST(LAB2, PlayerBuyNoOwnedCompanies)
 {
-    string players[]{ "Peter","Ekaterina","Alexander" };
+    vector<string> players = { "Peter","Ekaterina","Alexander" };
 
-    Monopoly monopoly(players, 3);
-    Field* field = monopoly.GetFieldByName("Ford");
+    Monopoly monopoly(players);
+    std::shared_ptr<Field> field = monopoly.GetFieldByName("Ford");
     monopoly.Buy(1, field);
 
     auto player = monopoly.GetPlayer(1);
@@ -56,9 +70,9 @@ TEST(LAB2, PlayerBuyNoOwnedCompanies)
 
 TEST(LAB2, RentaShouldBeCorrectTransferMoney)
 {
-    string players[]{ "Peter","Ekaterina","Alexander" };
-    Monopoly monopoly(players, 3);
-    Field* field = monopoly.GetFieldByName("Ford");
+    vector<string> players ={ "Peter","Ekaterina","Alexander" };
+    Monopoly monopoly(players);
+    std::shared_ptr<Field> field = monopoly.GetFieldByName("Ford");
     monopoly.Buy(1, field);
 
     field = monopoly.GetFieldByName("Ford");

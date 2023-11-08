@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <memory>
 #include "Player.h"
 
 class Field
@@ -15,12 +16,12 @@ public:
 
     const std::string& GetName() const;
 
-    void SetOwner(Player* newOwner);
-    Player* GetOwner() const;
+    void SetOwner(std::shared_ptr<Player> newOwner);
+    std::shared_ptr<Player> GetOwner() const;
 
 protected:
     std::string name;
-    Player* owner;
+    std::shared_ptr<Player> owner;
 };
 
 class FieldAuto : public Field
@@ -38,9 +39,9 @@ class FieldFood : public Field
 public:
     FieldFood(const std::string &name): Field(name){};
     virtual ~FieldFood(){};
-    int GetAmountOfMoneyForRenta() const override;
-    int GetPriceForBuying() const override;
-    bool IsPossibleToBuy() const override;
+    virtual int GetAmountOfMoneyForRenta() const override;
+    virtual int GetPriceForBuying() const override;
+    virtual bool IsPossibleToBuy() const override;
 };
 
 class FieldTravel : public Field

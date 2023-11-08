@@ -15,12 +15,12 @@ bool Field::IsOwnerExist() const
     return owner != nullptr;
 }
 
-void Field::SetOwner(Player *newOwner)
+void Field::SetOwner(std::shared_ptr<Player> newOwner)
 {
     owner = newOwner;
 }
 
-Player *Field::GetOwner() const
+std::shared_ptr<Player> Field::GetOwner() const
 {
     return owner;
 }

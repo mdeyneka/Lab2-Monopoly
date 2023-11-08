@@ -2,22 +2,23 @@
 
 #include <vector>
 #include <string>
+#include <memory>
 #include "Player.h"
 #include <Field.h>
 
 class Monopoly
 {
 public:
-	Monopoly(std::string names[10],int);
-	std::vector<Player>* GetPlayers();
-	std::vector<Field*>* GetFields();
-	Player* GetPlayer(int);
-	bool Buy(int p, Field* field);
-	Field* GetFieldByName(const std::string& name);	
-	bool Renta(int p, Field* field);
+	Monopoly(const std::vector<std::string>& names);
+	std::vector<std::shared_ptr<Player>>* GetPlayers();
+	std::vector<std::shared_ptr<Field>>* GetFields();
+	std::shared_ptr<Player> GetPlayer(int);
+	bool Buy(int p, std::shared_ptr<Field> field);
+	std::shared_ptr<Field> GetFieldByName(const std::string& name);	
+	bool Renta(int p, std::shared_ptr<Field> field);
 
 private:
-	std::vector<Field*> fields;
-	std::vector<Player> players;
+	std::vector<std::shared_ptr<Field>> fields;
+	std::vector<std::shared_ptr<Player>> players;
 };
 
