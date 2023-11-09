@@ -1,5 +1,6 @@
 #include "Monolopy.h"
 #include <algorithm>
+#include <exception>
 
 using namespace ::std;
 
@@ -40,6 +41,8 @@ shared_ptr<Player> Monopoly::GetPlayer(int index)
 
 bool Monopoly::Buy(int playerIndex, std::shared_ptr<Field> field)
 {
+	if (IsPlayerIndexOutOfBound(playerIndex))
+		throw std::out_of_range("Player index is out of boundary");
 	if (field->IsOwnerExist() || !field->IsPossibleToBuy())
 		return false;
 	shared_ptr<Player> buyer = GetPlayer(playerIndex);
@@ -56,10 +59,17 @@ std::shared_ptr<Field> Monopoly::GetFieldByName(const std::string& name)
 	return *it;
 }
 
+bool Monopoly::IsPlayerIndexOutOfBound(int index)
+{
+	return players.size() < index;
+}
+
 bool Monopoly::Renta(int playerIndex, std::shared_ptr<Field> field)
 {
+	if (IsPlayerIndexOutOfBound(playerIndex))
+		throw std::out_of_range("Player index is out of boundary");
 	if (!field->IsOwnerExist())
-			return false;
+		return false;
 	shared_ptr<Player> tenant = GetPlayer(playerIndex);
 	field->GetOwner()->AddMoney(field->GetAmountOfMoneyForRenta());
 	tenant->SubtractMoney(field->GetAmountOfMoneyForRenta());

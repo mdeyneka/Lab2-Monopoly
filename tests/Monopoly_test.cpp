@@ -102,7 +102,17 @@ TEST(LAB2, RentaShouldBeCorrectTransferMoney)
     ASSERT_EQ(player2->GetAmountOfMoney(), 5750);    
 }
 
+TEST(LAB2, NotExistedPlayerTriesBuyField)
+{
+    vector<string> players ={ "Peter","Ekaterina","Alexander" };
+    Monopoly monopoly(players);
+    std::shared_ptr<Field> field = monopoly.GetFieldByName("Ford");
+
+    EXPECT_THROW(monopoly.Buy(4, field), std::out_of_range);
+}
+
 bool operator== (const Field& a , const Field& b)
 {
     return a.GetName() == b.GetName() && a.GetOwner() == b.GetOwner();
 }
+

@@ -18,6 +18,9 @@ public:
 	std::shared_ptr<Field> GetFieldByName(const std::string& name);
 
 private:
+	bool IsPlayerIndexOutOfBound(int index);
+
+private:
 	std::vector<std::shared_ptr<Field>> fields;
 	std::vector<std::shared_ptr<Player>> players;
 };
