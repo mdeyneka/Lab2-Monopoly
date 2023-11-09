@@ -4,6 +4,8 @@
 
 using namespace ::std;
 
+const int DefaultCountOfMonerPerUser = 6000;
+
 class MockPlayer : public Player
 {
     MOCK_METHOD(const string&, GetName, (), (const, override));
@@ -18,6 +20,22 @@ class MockFieldFood : public FieldFood
     MOCK_METHOD(int, GetAmountOfMoneyForRenta, (), (const. override));
 };
 
+TEST(LAB2, PlayerCanBuyNotOwnedField)
+{
+    vector<string> players = {"Peter","Ekaterina","Alexander"};
+    Monopoly monopoly(players);
+    shared_ptr<Field> fieldNordavia = monopoly.GetFieldByName("Nordavia");
+    ASSERT_TRUE(monopoly.Buy(1, fieldNordavia));
+};
+
+TEST(LAB2, PlayerPaidCorrectAmountOfMoneyBuyingFieldFood)
+{
+    vector<string> players = {"Peter","Ekaterina","Alexander"};
+    Monopoly monopoly(players);
+    shared_ptr<Field> fieldMCDonald = monopoly.GetFieldByName("MCDonald");
+    monopoly.Buy(1, fieldMCDonald);
+};
+
 TEST(LAB2, GetPlayersListReturnCorrectList) {
     vector<string> players = { "Peter","Ekaterina","Alexander" };
    
@@ -27,7 +45,7 @@ TEST(LAB2, GetPlayersListReturnCorrectList) {
     int i = 0;
     for (auto c : *x) {
         ASSERT_STREQ(c->GetName().c_str(), players[i++].c_str());
-        ASSERT_EQ(c->GetAmountOfMoney(), 6000);
+        ASSERT_EQ(c->GetAmountOfMoney(), DefaultCountOfMonerPerUser);
     }
     ASSERT_TRUE(i);
 }

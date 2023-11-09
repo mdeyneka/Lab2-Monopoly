@@ -3,11 +3,13 @@
 
 using namespace ::std;
 
+const int DefaultCountOfMonerPerUser = 6000;
+
 Monopoly::Monopoly(const vector<string>& names)
 {
 	for(auto it = names.cbegin(); it != names.cend(); ++it)
 	{
-		players.emplace_back(new Player(*it, 6000));
+		players.emplace_back(new Player(*it, DefaultCountOfMonerPerUser));
 	}
 	fields.emplace_back(new FieldAuto("Ford"));
 	fields.emplace_back(new FieldFood("MCDonald"));
@@ -29,11 +31,11 @@ std::vector<std::shared_ptr<Field>>* Monopoly::GetFields()
 	return &fields;
 }
 
-shared_ptr<Player> Monopoly::GetPlayer(int m)
+shared_ptr<Player> Monopoly::GetPlayer(int index)
 {
-	std::vector<shared_ptr<Player>>::iterator i = players.begin();
-	advance(i, m - 1);
-	return *i;
+	std::vector<shared_ptr<Player>>::iterator it = players.begin();
+	advance(it, index - 1);
+	return *it;
 }
 
 bool Monopoly::Buy(int playerIndex, std::shared_ptr<Field> field)
@@ -48,8 +50,8 @@ bool Monopoly::Buy(int playerIndex, std::shared_ptr<Field> field)
 
 std::shared_ptr<Field> Monopoly::GetFieldByName(const std::string& name)
 {
-	std::vector<std::shared_ptr<Field>>::iterator it = find_if(fields.begin(), fields.end(),[name] (std::shared_ptr<Field> x) {
-		return x->GetName() == name;
+	std::vector<std::shared_ptr<Field>>::iterator it = find_if(fields.begin(), fields.end(),[name] (std::shared_ptr<Field> field) {
+		return field->GetName() == name;
 	});
 	return *it;
 }
